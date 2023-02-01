@@ -83,9 +83,6 @@ class MainWindow(QWidget):
             params["pt"] = '~'.join(self.pt)
 
         response = requests.get('https://static-maps.yandex.ru/1.x/', params=params)
-        with open('pic.png', 'wb') as pic:
-            pic.write(response.content)
-
         pixmap = QPixmap()
         pixmap.loadFromData(response.content)
         self.label.setPixmap(pixmap)
