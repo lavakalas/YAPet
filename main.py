@@ -58,9 +58,6 @@ class MainWindow(QWidget):
             'z': self.map_zoom
         }
         response = requests.get('https://static-maps.yandex.ru/1.x/', params=params)
-        with open('pic.png', 'wb') as pic:
-            pic.write(response.content)
-
         pixmap = QPixmap()
         pixmap.loadFromData(response.content)
         self.label.setPixmap(pixmap)
