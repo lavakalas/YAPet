@@ -8,9 +8,10 @@ from PyQt5.QtWidgets import *
 class MainWindow(QWidget):
     def __init__(self, parent=None):
         self.map_ll = [37.977751, 55.757718]
-        self.map_l = "map"
+        self.map_l = 0
         self.map_zoom = 5
         self.delta_arrows = 0.1
+        self.modes = ["map", "sat", "sat,skl"]
 
         super(MainWindow, self).__init__(parent)
         self.loadUI()
@@ -19,7 +20,16 @@ class MainWindow(QWidget):
         self.show()
         self.refresh()
 
+    def switch_mode(self):
+        self.map_l = (self.map_l + 1) % len(self.modes)
+
+    
+    
     def keyPressEvent(self, event):
+        if event.key() == Qt.Key_Tab:
+            self.switch_mode()
+
+        
         if event.key() == Qt.Key_PageUp and self.map_zoom < 18:
             self.map_zoom += 1
 
@@ -44,7 +54,7 @@ class MainWindow(QWidget):
     def refresh(self):
         params = {
             "ll": ','.join(map(str, self.map_ll)),
-            "l": self.map_l,
+            "l": self.modes[self.map_l],
             'z': self.map_zoom
         }
         response = requests.get('https://static-maps.yandex.ru/1.x/', params=params)
