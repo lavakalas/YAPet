@@ -69,7 +69,7 @@ class MainWindow(QWidget):
             pic.write(response.content)
 
         pixmap = QPixmap()
-        pixmap.load('pic.png')
+        pixmap.loadFromData(response.content)
         self.label.setPixmap(pixmap)
 
     def loadUI(self):
