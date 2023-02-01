@@ -1,6 +1,6 @@
 import requests
 import sys
-from geocoder import get_coordinates
+from geocoder import *
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
@@ -62,12 +62,15 @@ class MainWindow(QWidget):
 
     def find_object(self):
         response_text = self.search_field.text()
-        coordinates = get_coordinates(response_text)
+        geocode_response = get_coordinates(response_text)
+        coordinates = geocode_response['coords']
 
         if not coordinates:
             return
 
+
         self.pt.append("{},{},vkbkm".format(*coordinates))
+        self.label_name.setText(geocode_response["name"])
         self.map_ll = list(coordinates)
 
         self.refresh()
@@ -103,6 +106,12 @@ class MainWindow(QWidget):
         self.start_search_button.resize(87, 40)
         self.start_search_button.setText("Искать")
         self.start_search_button.setEnabled(False)
+
+        # название локации
+        self.label_name = QLabel(self)
+        self.label_name.resize(400, 22)
+        self.label_name.move(0, 428)
+        self.label_name.setFont(QFont("Sans", 18))
 
 
 if __name__ == "__main__":

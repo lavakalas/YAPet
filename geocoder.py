@@ -1,3 +1,4 @@
+from pprint import pprint
 import requests
 
 API_KEY = '40d1649f-0493-4b70-98ba-98533de7710b'
@@ -34,7 +35,7 @@ def get_coordinates(address):
     toponym_coodrinates = toponym["Point"]["pos"]
     # Широта, преобразованная в плавающее число:
     toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
-    return float(toponym_longitude), float(toponym_lattitude)
+    return {"coords": (float(toponym_longitude), float(toponym_lattitude)), "name": toponym["metaDataProperty"]["GeocoderMetaData"]["text"]}
 
 
 # Получаем параметры объекта для рисования карты вокруг него.
