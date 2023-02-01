@@ -81,7 +81,6 @@ class MainWindow(QWidget):
         }
         if self.pt:
             params["pt"] = '~'.join(self.pt)
-
         response = requests.get('https://static-maps.yandex.ru/1.x/', params=params)
         pixmap = QPixmap()
         pixmap.loadFromData(response.content)
