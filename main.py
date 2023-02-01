@@ -10,6 +10,7 @@ class MainWindow(QWidget):
         self.map_ll = [37.977751, 55.757718]
         self.map_l = "map"
         self.map_zoom = 5
+        self.delta_arrows = 0.1
 
         super(MainWindow, self).__init__(parent)
         self.loadUI()
@@ -24,6 +25,19 @@ class MainWindow(QWidget):
 
         if event.key() == Qt.Key_PageDown and self.map_zoom > 0:
             self.map_zoom -= 1
+
+        # стрелки
+        if event.key() == Qt.Key_Left:
+            self.map_ll[0] -= self.delta_arrows
+
+        if event.key() == Qt.Key_Right:
+            self.map_ll[0] += self.delta_arrows
+
+        if event.key() == Qt.Key_Up:
+            self.map_ll[1] += self.delta_arrows
+
+        if event.key() == Qt.Key_Down:
+            self.map_ll[1] -= self.delta_arrows
 
         self.refresh()
 
