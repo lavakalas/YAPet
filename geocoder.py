@@ -35,7 +35,16 @@ def get_coordinates(address):
     toponym_coodrinates = toponym["Point"]["pos"]
     # Широта, преобразованная в плавающее число:
     toponym_longitude, toponym_lattitude = toponym_coodrinates.split(" ")
-    return {"coords": (float(toponym_longitude), float(toponym_lattitude)), "name": toponym["metaDataProperty"]["GeocoderMetaData"]["text"]}
+
+    try:
+        return {"coords": (float(toponym_longitude), float(toponym_lattitude)),
+                "name": toponym["metaDataProperty"]["GeocoderMetaData"]["text"],
+                "postalcode": toponym["metaDataProperty"]["GeocoderMetaData"]["Address"]["postal_code"]}
+
+    except KeyError:
+        return {"coords": (float(toponym_longitude), float(toponym_lattitude)),
+                "name": toponym["metaDataProperty"]["GeocoderMetaData"]["text"],
+                "postalcode": "Нет"}
 
 
 # Получаем параметры объекта для рисования карты вокруг него.
