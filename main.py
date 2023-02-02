@@ -59,6 +59,7 @@ class MainWindow(QWidget):
             self.search_field.setEnabled(not self.search_field.isEnabled())
             self.start_search_button.setEnabled(not self.start_search_button.isEnabled())
             self.reset_button.setEnabled(not self.reset_button.isEnabled())
+            self.index_chbox.setEnabled(not self.index_chbox.isEnabled())
 
         self.refresh()
 
@@ -68,10 +69,14 @@ class MainWindow(QWidget):
         coordinates = geocode_response['coords']
 
         if not coordinates:
+            self.label_name.setText("Адрес не найден!")
             return
 
         self.pt = "{},{},vkbkm".format(*coordinates)
-        self.label_name.setText(geocode_response["name"])
+        self.label_name.setText(
+            f"{geocode_response['name']}, Почтовый индекс: {geocode_response['postalcode']}"
+            if geocode_response['postalcode'] != "Нет" and self.index_chbox.isChecked() else geocode_response['name'])
+
         self.map_ll = list(coordinates)
 
         self.refresh()
@@ -105,28 +110,34 @@ class MainWindow(QWidget):
         # запрос
         self.search_field = QLineEdit(self)
         self.search_field.move(3, 3)
-        self.search_field.resize(415, 40)
+        self.search_field.resize(315, 40)
         self.search_field.setEnabled(False)
 
         # кнопка искать
         self.start_search_button = QPushButton(self)
-        self.start_search_button.move(421, 3)
+        self.start_search_button.move(321, 3)
         self.start_search_button.resize(87, 40)
         self.start_search_button.setText("Искать")
         self.start_search_button.setEnabled(False)
 
         # название локации
         self.label_name = QLabel(self)
-        self.label_name.resize(400, 22)
+        self.label_name.resize(600, 22)
         self.label_name.move(0, 428)
-        self.label_name.setFont(QFont("Sans", 18))
+        self.label_name.setFont(QFont("Sans", 10))
 
         # кнопка "Сброс метки"
         self.reset_button = QPushButton(self)
-        self.reset_button.move(511, 3)
+        self.reset_button.move(411, 3)
         self.reset_button.resize(87, 40)
         self.reset_button.setText("Сброс")
         self.reset_button.setEnabled(False)
+
+        # приписывать ли индекс
+        self.index_chbox = QCheckBox(self)
+        self.index_chbox.move(505, 3)
+        self.index_chbox.setText("Почтовый\nиндекс")
+        self.index_chbox.setEnabled(False)
 
 
 if __name__ == "__main__":
