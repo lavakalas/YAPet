@@ -15,8 +15,8 @@ class MainWindow(QWidget):
         self.delta_arrows = 0.1
         self.modes = ["map", "sat", "sat,skl"]
         self.geocoder_apikey = "40d1649f-0493-4b70-98ba-98533de7710b"
-        # метки
-        self.pt = []
+        # метка
+        self.pt = ''
 
         super(MainWindow, self).__init__(parent)
         self.loadUI()
@@ -25,6 +25,7 @@ class MainWindow(QWidget):
         self.show()
         self.refresh()
         self.start_search_button.clicked.connect(self.find_object)
+        self.reset_button.clicked.connect(self.reset_point)
 
     def switch_mode(self):
         self.map_l = (self.map_l + 1) % len(self.modes)
@@ -57,6 +58,7 @@ class MainWindow(QWidget):
         if event.key() == Qt.Key_F1:
             self.search_field.setEnabled(not self.search_field.isEnabled())
             self.start_search_button.setEnabled(not self.start_search_button.isEnabled())
+            self.reset_button.setEnabled(not self.reset_button.isEnabled())
 
         self.refresh()
 
@@ -68,10 +70,15 @@ class MainWindow(QWidget):
         if not coordinates:
             return
 
-
-        self.pt.append("{},{},vkbkm".format(*coordinates))
+        self.pt = "{},{},vkbkm".format(*coordinates)
         self.label_name.setText(geocode_response["name"])
         self.map_ll = list(coordinates)
+
+        self.refresh()
+
+    def reset_point(self):
+        self.pt = ""
+        self.label_name.setText("")
 
         self.refresh()
 
@@ -83,7 +90,8 @@ class MainWindow(QWidget):
             "size": ','.join(map(str, self.map_size))
         }
         if self.pt:
-            params["pt"] = '~'.join(self.pt)
+            params["pt"] = self.pt
+
         response = requests.get('https://static-maps.yandex.ru/1.x/', params=params)
         pixmap = QPixmap()
         pixmap.loadFromData(response.content)
@@ -97,12 +105,12 @@ class MainWindow(QWidget):
         # запрос
         self.search_field = QLineEdit(self)
         self.search_field.move(3, 3)
-        self.search_field.resize(505, 40)
+        self.search_field.resize(415, 40)
         self.search_field.setEnabled(False)
 
         # кнопка искать
         self.start_search_button = QPushButton(self)
-        self.start_search_button.move(511, 3)
+        self.start_search_button.move(421, 3)
         self.start_search_button.resize(87, 40)
         self.start_search_button.setText("Искать")
         self.start_search_button.setEnabled(False)
@@ -112,6 +120,13 @@ class MainWindow(QWidget):
         self.label_name.resize(400, 22)
         self.label_name.move(0, 428)
         self.label_name.setFont(QFont("Sans", 18))
+
+        # кнопка "Сброс метки"
+        self.reset_button = QPushButton(self)
+        self.reset_button.move(511, 3)
+        self.reset_button.resize(87, 40)
+        self.reset_button.setText("Сброс")
+        self.reset_button.setEnabled(False)
 
 
 if __name__ == "__main__":
