@@ -26,6 +26,7 @@ class MainWindow(QWidget):
         self.refresh()
         self.start_search_button.clicked.connect(self.find_object)
         self.reset_button.clicked.connect(self.reset_point)
+        self.index_chbox.stateChanged.connect(self.config_postindx)
 
     def switch_mode(self):
         self.map_l = (self.map_l + 1) % len(self.modes)
@@ -63,8 +64,31 @@ class MainWindow(QWidget):
 
         self.refresh()
 
+    def config_postindx(self):
+        response_text = self.search_field.text()
+
+        # некорректный запрос или не к чему приписывать индекс
+        if not response_text or not self.label_name.text():
+            return
+
+        geocode_response = get_coordinates(response_text)
+        coordinates = geocode_response['coords']
+
+        if f"{coordinates[0]},{coordinates[1]}" != self.pt[:-6]:
+            return
+
+        self.label_name.setText(
+            f"{geocode_response['name']}, Почтовый индекс: {geocode_response['postalcode']}"
+            if geocode_response['postalcode'] != "Нет" and self.index_chbox.isChecked() else geocode_response['name'])
+
+        self.refresh()
+
     def find_object(self):
         response_text = self.search_field.text()
+
+        if not response_text:
+            return
+
         geocode_response = get_coordinates(response_text)
         coordinates = geocode_response['coords']
 
